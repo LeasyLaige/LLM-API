@@ -1,0 +1,3 @@
+# Environment files
+*.env
+LLM-Python-Django/.env
