@@ -1,0 +1,40 @@
+server:
+  port: 8080
+spring:
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/llmsb?allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&useSSL=false
+    username: root
+    password: MadebyRootMysql399!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+  http:
+    multipart:
+      enabled: true
+      location: upload
+file:
+  upload:
+    location: ..\\upload-dir
+logging:
+  level:
+    com:
+      suarez:
+        llmsb: TRACE
+        llmdata: TRACE

@@ -1,0 +1,51 @@
+<div class="chat-wrapper">
+  <!-- Header -->
+  <header class="chat-header">
+    <h1>LLM Assistant</h1>
+  </header>
+
+  <!-- Messages area -->
+  <div class="chat-messages" #scrollContainer>
+    @if (messages().length === 0 && !loading()) {
+      <div class="empty-state">
+        <span class="empty-icon">💬</span>
+        <p>Ask anything &mdash; powered by an LLM back-end</p>
+      </div>
+    }
+
+    @for (msg of messages(); track $index) {
+      <div class="message" [class]="'message--' + msg.role">
+        <div class="message__bubble">
+          {{ msg.content }}
+        </div>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="message message--assistant">
+        <div class="message__bubble typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Input bar -->
+  <form class="chat-input" (ngSubmit)="onSubmit()">
+    <textarea
+      [(ngModel)]="prompt"
+      name="prompt"
+      rows="1"
+      placeholder="Message LLM Assistant…"
+      [disabled]="loading()"
+      (keydown)="onKeydown($event)"
+    ></textarea>
+    <button type="submit" [disabled]="loading() || prompt.trim().length === 0" aria-label="Send">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 2L11 13"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+      </svg>
+    </button>
+  </form>
+</div>

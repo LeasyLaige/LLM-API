@@ -1,0 +1,65 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: llm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: MadebyRootMysql399!
+      MYSQL_DATABASE: llmsb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-network
+
+  llm-django:
+    build: ./LLM-Python-Django
+    container_name: llm-django
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./LLM-Python-Django/.env
+    environment:
+      - CORS_ALLOWED_ORIGIN=http://localhost:8080,http://llm-springboot:8080
+    networks:
+      - ai-network
+
+  llm-springboot:
+    build: ./LLM-Springboot
+    container_name: llm-springboot
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      llm-django:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://llm-mysql:3306/llmsb?allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: MadebyRootMysql399!
+    networks:
+      - ai-network
+
+  llm-frontend:
+    build: ./LLM-Frontend
+    container_name: llm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - llm-springboot
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
